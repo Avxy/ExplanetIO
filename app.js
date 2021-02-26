@@ -14,8 +14,14 @@ app.use(express.static('public_html/blockland'));
 app.use(express.static('public_html/libs'));
 // app.use(express.static('public_html/blockland/v3'));
 app.get('/',function(req, res) {
-    res.render('index');
+	var body = req.body
+    res.render('index', {body:body});
 });
+app.get('/broadcast', (req, res)=>{
+	res.render('broadcast')
+})
+
+let broadcaster
 
 io.sockets.on('connection', function(socket){
 	socket.userData = { x:0, y:0, z:0, heading:0 };//Default values;
@@ -52,6 +58,27 @@ io.sockets.on('connection', function(socket){
 		console.log(`chat message:${data.id} ${data.message}`);
 		io.to(data.id).emit('chat message', { id: socket.id, message: data.message });
 	})
+
+	socket.on("broadcaster", () => {
+		broadcaster = socket.id;
+		socket.broadcast.emit("broadcaster");
+	  });
+	  socket.on("watcher", () => {
+		socket.to(broadcaster).emit("watcher", socket.id);
+	  });
+	  socket.on("disconnection", () => {
+		socket.to(broadcaster).emit("disconnectPeer", socket.id);
+	  });
+
+	  socket.on("offer", (id, message) => {
+		socket.to(id).emit("offer", socket.id, message);
+	});
+	socket.on("answer", (id, message) => {
+	  socket.to(id).emit("answer", socket.id, message);
+	});
+	socket.on("candidate", (id, message) => {
+	  socket.to(id).emit("candidate", socket.id, message);
+	});
 });
 
 http.listen(process.env.PORT||8080, function(){

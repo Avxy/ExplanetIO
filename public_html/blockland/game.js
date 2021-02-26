@@ -342,7 +342,7 @@ class Game{
 				}
 			});
 			if (players.length>0){
-				const player = players[0] ;
+				const player = players[0]  ;
 				console.log(`onMouseDown: player ${player.id}`);
 				this.speechBubble.player = player;
 				this.speechBubble.update('');
@@ -350,33 +350,8 @@ class Game{
 				this.chatSocketId = player.id ;
 				chat.style.bottom = '0px';
 				this.activeCamera = this.cameras.chat;
-				webcam()
-			
-		function webcam(){
-				
-				if ( navigator.mediaDevices && navigator.mediaDevices.getUserMedia({audio:true,video:true}) ) {
-					var video = document.getElementById('video')
-					video.style.display = 'flex'		
-	
-					const constraints = { video: { width: 1280, height: 720, facingMode: 'user' } };
-					
-					navigator.mediaDevices.getUserMedia( constraints ).then( function ( stream ) {
-					
-					// apply the stream to the video element used in the texture
-					
-					video.srcObject = stream;
-					video.play();
-					
-					} ).catch( function ( error ) {
-					console.error( 'Unable to access the camera/webcam.', error );
-					} );
-					
-					} else {
-					console.error( 'MediaDevices interface not available.' );
-					}
-			}
-			
-		}
+				window.location="broadcast";
+	}
 		
 		}else{
 			//Is the chat panel visible?
@@ -386,11 +361,7 @@ class Game{
 				delete this.speechBubble.player;
 				delete this.chatSocketId;
 				chat.style.bottom = '-50px';
-				this.activeCamera = this.cameras.back;
-				var video = document.getElementById('video')
-				video.style.display = 'none'
-				
-				
+				this.activeCamera = this.cameras.back;		
 			}else{
 				console.log("onMouseDown: typing");
 			}
