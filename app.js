@@ -14,11 +14,11 @@ app.use(express.static('public_html/blockland'));
 app.use(express.static('public_html/libs'));
 // app.use(express.static('public_html/blockland/v3'));
 app.get('/',function(req, res) {
-	var body = req.body
-    res.render('index', {body:body});
+    res.render('index');
 });
 app.get('/broadcast', (req, res)=>{
-	res.render('broadcast')
+	var body = req.body
+	res.render('broadcast', {body:body})
 })
 
 let broadcaster

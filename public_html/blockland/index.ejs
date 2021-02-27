@@ -69,7 +69,6 @@
 	</head>
 
 	<body>
-		<video style="position: absolute;" playsinline autoplay></video>
 
 
 		<div id="message">
@@ -88,12 +87,22 @@
 		<script src="FBXLoader.js"></script>
 		<script src="Detector.js"></script>
 		<script src="toon3d.js"></script>
-		<script src="watch.js"></script>
 		<script src="game.js"></script>
+
 		<script>
 			var game;
 			document.addEventListener("DOMContentLoaded", function(){ game = new Game(); });
 		</script>
+		<div style="width:100%;display: flex;justify-content: space-evenly;">
+			<div>
+				<video playinsline autoplay style="position: absolute; width: 300px; height: 300px;" id="watcher"></video>
+	</div>
+	<div>
+	
+		<video playsinline autoplay muted style="position: absolute; width: 300px; height: 300px;" id="broadcaster"></video>
+	</div>
+	</div>
+
 
 	</body>
 </html>
