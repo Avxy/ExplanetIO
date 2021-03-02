@@ -655,9 +655,9 @@ class PlayerLocal extends Player{
 			game.chatSocketId = player.id;
 			game.activeCamera = game.cameras.chat;
 			game.speechBubble.update(data.message);
-			watcher()
+			
 		});
-		
+		watcher()
 
 	
 		function watcher(){
