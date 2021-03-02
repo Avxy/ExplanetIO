@@ -352,7 +352,7 @@ class Game{
 				this.activeCamera = this.cameras.chat;
 
 
-				broadcast(watcher())
+				watcher(broadcast())
 
 		function broadcast(){
 		const peerConnections = {};
