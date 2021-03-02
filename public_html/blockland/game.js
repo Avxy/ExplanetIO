@@ -350,58 +350,77 @@ class Game{
 				this.chatSocketId = player.id ;
 				chat.style.bottom = '0px';
 				this.activeCamera = this.cameras.chat;
-				watcher()
-				function watcher(){
-					let peerConnection;
-				const config = {
-				  iceServers: [
-					{
-					  urls: ["stun:stun.l.google.com:19302"]
-					}
-				  ]
-				};
-				
-				const socket = io.connect(window.location.origin);
-				const video = document.querySelector("#watcher");
-				
-				socket.on("offer", (id, description) => {
-					peerConnection = new RTCPeerConnection(config);
-					peerConnection
-					  .setRemoteDescription(description)
-					  .then(() => peerConnection.createAnswer())
-					  .then(sdp => peerConnection.setLocalDescription(sdp))
-					  .then(() => {
-						socket.emit("answer", id, peerConnection.localDescription);
-					  });
-					peerConnection.ontrack = event => {
-					  video.srcObject = event.streams[0];
-					};
-					peerConnection.onicecandidate = event => {
-					  if (event.candidate) {
-						socket.emit("candidate", id, event.candidate);
-					  }
-					};
-				  });
-				
-				  socket.on("candidate", (id, candidate) => {
-					peerConnection
-					  .addIceCandidate(new RTCIceCandidate(candidate))
-					  .catch(e => console.error(e));
-				  });
-				  
-				  socket.on("connect", () => {
-					socket.emit("watcher");
-				  });
-				  
-				  socket.on("broadcaster", () => {
-					socket.emit("watcher");
-				  });
-				  
-				  window.onunload = window.onbeforeunload = () => {
-					socket.close();
-					peerConnection.close();
-				  };
+
+
+				broadcast()
+
+				function broadcast(){
+					const peerConnections = {};
+		const config = {
+		  iceServers: [
+			{
+			  urls: ["stun:stun.l.google.com:19302"]
+			}
+		  ]
+		};
+		
+		const socket = io.connect(window.location.origin);
+		const video = document.querySelector('#broadcaster')
+		
+		// Media contrains
+		const constraints = {
+		  video: { facingMode: "user" }
+		  // Uncomment to enable audio
+		  // audio: true,
+		};
+		navigator.mediaDevices
+		  .getUserMedia(constraints)
+		  .then(stream => {
+			video.srcObject = stream;
+			socket.emit("broadcaster");
+		  })
+		  .catch(error => console.error(error));
+		
+		  socket.on("watcher", id => {
+			const peerConnection = new RTCPeerConnection(config);
+			peerConnections[id] = peerConnection;
+		  
+			let stream = video.srcObject;
+			stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+			  
+			peerConnection.onicecandidate = event => {
+			  if (event.candidate) {
+				socket.emit("candidate", id, event.candidate);
+			  }
+			};
+		  
+			peerConnection
+			  .createOffer()
+			  .then(sdp => peerConnection.setLocalDescription(sdp))
+			  .then(() => {
+				socket.emit("offer", id, peerConnection.localDescription);
+			  });
+		  });
+		  
+		  socket.on("answer", (id, description) => {
+			peerConnections[id].setRemoteDescription(description);
+		  });
+		  
+		  socket.on("candidate", (id, candidate) => {
+			peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate));
+		  });
+		
+		  socket.on("disconnectPeer", id => {
+			peerConnections[id].close();
+			delete peerConnections[id];
+		  });
+		
+		  window.onunload = window.onbeforeunload = () => {
+			socket.close();
+		  };
+		
 				}
+				
 	}
 		
 		}else{
@@ -481,7 +500,7 @@ class Player{
 		colour = colours[Math.floor(Math.random()*colours.length)];
 									
 		if (options===undefined){
-			const people = ['BeachBabe', 'BusinessMan', 'Doctor', 'FireFighter', 'Housewife', 'Policeman', 'Prostitute', 'Punk', 'RiotCop', 'Roadworker', 'Robber', 'Sheriff', 'Streetman', 'Waitress'];
+			const people = ['BusinessMan'];
 			model = people[Math.floor(Math.random()*people.length)];
 		}else if (typeof options =='object'){
 			this.local = false;
@@ -636,78 +655,62 @@ class PlayerLocal extends Player{
 			game.chatSocketId = player.id;
 			game.activeCamera = game.cameras.chat;
 			game.speechBubble.update(data.message);
-			
+			watcher()
 		});
 		
-		broadcast()
 
-		function broadcast(){
-			const peerConnections = {};
-const config = {
-  iceServers: [
-    {
-      urls: ["stun:stun.l.google.com:19302"]
-    }
-  ]
-};
-
-const socket = io.connect(window.location.origin);
-const video = document.querySelector('#broadcaster')
-
-// Media contrains
-const constraints = {
-  video: { facingMode: "user" }
-  // Uncomment to enable audio
-  // audio: true,
-};
-navigator.mediaDevices
-  .getUserMedia(constraints)
-  .then(stream => {
-    video.srcObject = stream;
-    socket.emit("broadcaster");
-  })
-  .catch(error => console.error(error));
-
-  socket.on("watcher", id => {
-    const peerConnection = new RTCPeerConnection(config);
-    peerConnections[id] = peerConnection;
-  
-    let stream = video.srcObject;
-    stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
-      
-    peerConnection.onicecandidate = event => {
-      if (event.candidate) {
-        socket.emit("candidate", id, event.candidate);
-      }
-    };
-  
-    peerConnection
-      .createOffer()
-      .then(sdp => peerConnection.setLocalDescription(sdp))
-      .then(() => {
-        socket.emit("offer", id, peerConnection.localDescription);
-      });
-  });
-  
-  socket.on("answer", (id, description) => {
-    peerConnections[id].setRemoteDescription(description);
-  });
-  
-  socket.on("candidate", (id, candidate) => {
-    peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate));
-  });
-
-  socket.on("disconnectPeer", id => {
-    peerConnections[id].close();
-    delete peerConnections[id];
-  });
-
-  window.onunload = window.onbeforeunload = () => {
-    socket.close();
-  };
-
+	
+		function watcher(){
+			let peerConnection;
+		const config = {
+		  iceServers: [
+			{
+			  urls: ["stun:stun.l.google.com:19302"]
+			}
+		  ]
+		};
+		
+		const socket = io.connect(window.location.origin);
+		const video = document.querySelector("#watcher");
+		
+		socket.on("offer", (id, description) => {
+			peerConnection = new RTCPeerConnection(config);
+			peerConnection
+			  .setRemoteDescription(description)
+			  .then(() => peerConnection.createAnswer())
+			  .then(sdp => peerConnection.setLocalDescription(sdp))
+			  .then(() => {
+				socket.emit("answer", id, peerConnection.localDescription);
+			  });
+			peerConnection.ontrack = event => {
+			  video.srcObject = event.streams[0];
+			};
+			peerConnection.onicecandidate = event => {
+			  if (event.candidate) {
+				socket.emit("candidate", id, event.candidate);
+			  }
+			};
+		  });
+		
+		  socket.on("candidate", (id, candidate) => {
+			peerConnection
+			  .addIceCandidate(new RTCIceCandidate(candidate))
+			  .catch(e => console.error(e));
+		  });
+		  
+		  socket.on("connect", () => {
+			socket.emit("watcher");
+		  });
+		  
+		  socket.on("broadcaster", () => {
+			socket.emit("watcher");
+		  });
+		  
+		  window.onunload = window.onbeforeunload = () => {
+			socket.close();
+			peerConnection.close();
+		  };
 		}
-
 
         
 		$('#msg-form').submit(function(e){
