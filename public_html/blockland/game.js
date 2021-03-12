@@ -367,7 +367,9 @@ class Game{
 		};
 		
 		const socket = io.connect(window.location.origin);
-		const video = document.getElementById("watcher");
+		const video = document.querySelector("#watcher");
+		const vidwat = document.getElementById('watcher')
+		vidwat.style.display = 'flex'
 		video.style.display = 'flex'	
 		
 		socket.on("offer", (id, description) => {
@@ -421,8 +423,9 @@ class Game{
 				};
 				
 				const socket = io.connect(window.location.origin);
-				const video = document.getElementById('broadcaster')
-				video.style.display = 'flex'
+				const video = document.querySelector('#broadcaster')
+				const vidbro = document.getElementById('broadcaster')
+				vidbro.style.display = 'flex'
 				const textureVideo = new THREE.VideoTexture( video );
 				
 				// Media contrains
