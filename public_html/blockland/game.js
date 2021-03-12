@@ -370,7 +370,7 @@ class Game{
 		const video = document.querySelector("#watcher");
 		const vidwat = document.getElementById('watcher')
 		vidwat.style.display = 'flex'
-		video.style.display = 'flex'	
+		vidwat.style.display = 'flex'	
 		
 		socket.on("offer", (id, description) => {
 			peerConnection = new RTCPeerConnection(config);
