@@ -317,8 +317,6 @@ class Game{
 		this.remoteColliders = remoteColliders;
 		this.remotePlayers.forEach(function(player){ player.update( dt ); });	
 	}
-	
-	
 
 	onMouseDown( event ) {
 	
@@ -355,9 +353,9 @@ class Game{
 				this.activeCamera = this.cameras.chat;
 //////////////////////////////////////////////////////////////////////////////
 
-				watcher(broadcast)
 				broadcast(watcher)
-
+				watcher(broadcast)
+				
 		function watcher(){
 		let peerConnection;
 		const config = {
@@ -369,7 +367,8 @@ class Game{
 		};
 		
 		const socket = io.connect(window.location.origin);
-		const video = document.querySelector("#watcher");
+		const video = document.getElementById("watcher");
+		video.style.display = 'flex'	
 		
 		socket.on("offer", (id, description) => {
 			peerConnection = new RTCPeerConnection(config);
@@ -422,7 +421,8 @@ class Game{
 				};
 				
 				const socket = io.connect(window.location.origin);
-				const video = document.querySelector('#broadcaster')
+				const video = document.getElementById('broadcaster')
+				video.style.display = 'flex'
 				const textureVideo = new THREE.VideoTexture( video );
 				
 				// Media contrains
@@ -490,7 +490,11 @@ class Game{
 				delete this.speechBubble.player;
 				delete this.chatSocketId;
 				chat.style.bottom = '-50px';
-				this.activeCamera = this.cameras.back;		
+				this.activeCamera = this.cameras.back;
+				const videob = document.getElementById('broadcaster')
+				const videow = document.getElementById('watcher')	
+				videob.style.display = 'none'
+				videow.style.display = 'none'
 			}else{
 				console.log("onMouseDown: typing");
 			}
