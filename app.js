@@ -23,6 +23,7 @@ app.get('/broadcast', (req, res)=>{
 
 let broadcaster
 
+///////////// Nik Code //////////////////////
 io.sockets.on('connection', function(socket){
 	socket.userData = { x:0, y:0, z:0, heading:0 };//Default values;
  
@@ -58,7 +59,7 @@ io.sockets.on('connection', function(socket){
 		console.log(`chat message:${data.id} ${data.message}`);
 		io.to(data.id).emit('chat message', { id: socket.id, message: data.message });
 	})
-
+///////////////////////////////////////////////
 	socket.on("broadcaster", () => {
 		broadcaster = socket.id;
 		socket.broadcast.emit("broadcaster");
@@ -84,7 +85,7 @@ io.sockets.on('connection', function(socket){
 http.listen(process.env.PORT||8080, function(){
   console.log('listening on *:2002');
 });
-
+////////////////////////// Nik Code ///////////////////////
 setInterval(function(){
 	const nsp = io.of('/');
     let pack = [];
@@ -108,3 +109,5 @@ setInterval(function(){
     }
 	if (pack.length>0) io.emit('remoteData', pack);
 }, 40);
+ 
+////////////////////////////////////////////////////////////////

@@ -57,7 +57,7 @@ class Game{
 		}
 		
 		this.anims.forEach( function(anim){ options.assets.push(`${game.assetsPath}fbx/anims/${anim}.fbx`)});
-		options.assets.push(`${game.assetsPath}fbx/town.fbx`);
+		options.assets.push(`${game.assetsPath}fbx/city.fbx`);
 		
 		this.mode = this.modes.PRELOAD;
 		
@@ -148,7 +148,7 @@ class Game{
 	
 	loadEnvironment(loader){
 		const game = this;
-		loader.load(`${this.assetsPath}fbx/town.fbx`, function(object){
+		loader.load(`${this.assetsPath}fbx/city.fbx`, function(object){
 			game.environment = object;
 			game.colliders = [];
 			game.scene.add(object);

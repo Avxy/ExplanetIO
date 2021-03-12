@@ -1,5 +1,4 @@
-
-
+////////////////////////// Nik Code ///////////////////////////
 class Game{
 	constructor(){
 		if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
@@ -98,28 +97,21 @@ class Game{
 		const ambient = new THREE.AmbientLight( 0xaaaaaa );
         this.scene.add( ambient );
 
-const size = 100;
-const divisions = 10;
-
-const gridHelper = new THREE.GridHelper( size, divisions );
-gridHelper.position.set(3122, 5, -173)
-this.scene.add( gridHelper );
-
         const light = new THREE.DirectionalLight( 0xaaaaaa );
-        light.position.set( 30, 100, 40 );
+        light.position.set( 1500, 6000, -200);
         light.target.position.set( 0, 0, 0 );
 
         light.castShadow = true;
 
-		const lightSize = 500;
+		const lightSize = 1500;
         light.shadow.camera.near = 1;
-        light.shadow.camera.far = 500;
+        light.shadow.camera.far = 1500;
 		light.shadow.camera.left = light.shadow.camera.bottom = -lightSize;
 		light.shadow.camera.right = light.shadow.camera.top = lightSize;
 
-        light.shadow.bias = 0.0039;
-        light.shadow.mapSize.width = 1024;
-        light.shadow.mapSize.height = 1024;
+        light.shadow.bias = 1.0039;
+        light.shadow.mapSize.width = 6024;
+        light.shadow.mapSize.height = 6024;
 		
 		this.sun = light;
 		this.scene.add(light);
@@ -259,6 +251,8 @@ this.scene.add( gridHelper );
 		txt.style.fontSize = fontSize + 'px';
 		const btn = document.getElementById('message_ok');
 		const panel = document.getElementById('message');
+		const textm = document.getElementById('textm')
+		textm =panel.innerHTML
 		const game = this;
 		if (onOK!=null){
 			btn.onclick = function(){ 
@@ -359,15 +353,11 @@ this.scene.add( gridHelper );
 				this.chatSocketId = player.id ;
 				chat.style.bottom = '0px';
 				this.activeCamera = this.cameras.chat;
+//////////////////////////////////////////////////////////////////////////////
 
+				watcher(broadcast)
+				broadcast(watcher)
 
-				// watcher(broadcast)
-				// broadcast(watcher)
-
-		
-
-				
-	
 		function watcher(){
 		let peerConnection;
 		const config = {
@@ -420,6 +410,75 @@ this.scene.add( gridHelper );
 		  };
 		}
 
+		function broadcast(){
+
+			const peerConnections = {};
+				const config = {
+				  iceServers: [
+					{
+					  urls: ["stun:stun.l.google.com:19302"]
+					}
+				  ]
+				};
+				
+				const socket = io.connect(window.location.origin);
+				const video = document.querySelector('#broadcaster')
+				const textureVideo = new THREE.VideoTexture( video );
+				
+				// Media contrains
+				const constraints = {
+				  video: { facingMode: "user" }
+				  // Uncomment to enable audio
+				  // audio: true,
+				};
+				navigator.mediaDevices
+				  .getUserMedia(constraints)
+				  .then(stream => {
+					video.srcObject = stream;
+					socket.emit("broadcaster");
+				  })
+				  .catch(error => console.error(error));
+				
+				  socket.on("watcher", id => {
+					const peerConnection = new RTCPeerConnection(config);
+					peerConnections[id] = peerConnection;
+				  
+					let stream = video.srcObject;
+					stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+					  
+					peerConnection.onicecandidate = event => {
+					  if (event.candidate) {
+						socket.emit("candidate", id, event.candidate);
+					  }
+					};
+				  
+					peerConnection
+					  .createOffer()
+					  .then(sdp => peerConnection.setLocalDescription(sdp))
+					  .then(() => {
+						socket.emit("offer", id, peerConnection.localDescription);
+					  });
+				  });
+				  
+				  socket.on("answer", (id, description) => {
+					peerConnections[id].setRemoteDescription(description);
+				  });
+				  
+				  socket.on("candidate", (id, candidate) => {
+					peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate));
+				  });
+				
+				  socket.on("disconnectPeer", id => {
+					peerConnections[id].close();
+					delete peerConnections[id];
+				  });
+				
+				  window.onunload = window.onbeforeunload = () => {
+					socket.close();
+				  };
+				
+				}	
+
 				
 	}
 		
@@ -437,7 +496,7 @@ this.scene.add( gridHelper );
 			}
 		}
 	}
-	
+	//////////////////// Nik Code ////////////////////////////////////////////////////////////
 	getRemotePlayerById(id){
 		if (this.remotePlayers===undefined || this.remotePlayers.length==0) return;
 		
@@ -532,75 +591,7 @@ class Player{
 					child.castShadow = true;
 					child.receiveShadow = true;		
 				}
-			} );
-	
-				const peerConnections = {};
-				const config = {
-				  iceServers: [
-					{
-					  urls: ["stun:stun.l.google.com:19302"]
-					}
-				  ]
-				};
-				
-				const socket = io.connect(window.location.origin);
-				const video = document.querySelector('#broadcaster')
-				const textureVideo = new THREE.VideoTexture( video );
-				
-				// Media contrains
-				const constraints = {
-				  video: { facingMode: "user" }
-				  // Uncomment to enable audio
-				  // audio: true,
-				};
-				navigator.mediaDevices
-				  .getUserMedia(constraints)
-				  .then(stream => {
-					video.srcObject = stream;
-					socket.emit("broadcaster");
-				  })
-				  .catch(error => console.error(error));
-				
-				  socket.on("watcher", id => {
-					const peerConnection = new RTCPeerConnection(config);
-					peerConnections[id] = peerConnection;
-				  
-					let stream = video.srcObject;
-					stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
-					  
-					peerConnection.onicecandidate = event => {
-					  if (event.candidate) {
-						socket.emit("candidate", id, event.candidate);
-					  }
-					};
-				  
-					peerConnection
-					  .createOffer()
-					  .then(sdp => peerConnection.setLocalDescription(sdp))
-					  .then(() => {
-						socket.emit("offer", id, peerConnection.localDescription);
-					  });
-				  });
-				  
-				  socket.on("answer", (id, description) => {
-					peerConnections[id].setRemoteDescription(description);
-				  });
-				  
-				  socket.on("candidate", (id, candidate) => {
-					peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate));
-				  });
-				
-				  socket.on("disconnectPeer", id => {
-					peerConnections[id].close();
-					delete peerConnections[id];
-				  });
-				
-				  window.onunload = window.onbeforeunload = () => {
-					socket.close();
-				  };
-				
-			
-					
+			} );	
 			
 			const textureLoader = new THREE.TextureLoader();
 			
@@ -608,7 +599,7 @@ class Player{
 				object.traverse( function ( child ) {
 					if ( child.isMesh ){
 						console.log(child)
-						child.material.map = textureVideo;
+						child.material.map = texture;
 					}
 				} );
 			});
@@ -827,14 +818,14 @@ class PlayerLocal extends Player{
 				if (targetY > this.object.position.y){
 					//Going up
 					this.object.position.y = 0.8 * this.object.position.y + 0.2 * targetY;
-					this.velocityY = 0;
+					this.velotownY = 0;
 				}else if (targetY < this.object.position.y){
 					//Falling
-					if (this.velocityY==undefined) this.velocityY = 0;
-					this.velocityY += dt * gravity;
-					this.object.position.y -= this.velocityY;
+					if (this.velotownY==undefined) this.velotownY = 0;
+					this.velotownY += dt * gravity;
+					this.object.position.y -= this.velotownY;
 					if (this.object.position.y < targetY){
-						this.velocityY = 0;
+						this.velotownY = 0;
 						this.object.position.y = targetY;
 					}
 				}
@@ -865,7 +856,7 @@ class SpeechBubble{
 			// onLoad callback
 			function ( texture ) {
 				// in this example we create the material when the texture is loaded
-				self.img = texture.image;
+				// self.img = texture.image;
 				self.mesh.material.map = texture;
 				self.mesh.material.transparent = true;
 				self.mesh.material.needsUpdate = true;
@@ -899,7 +890,7 @@ class SpeechBubble{
 		
 		const bg = this.img;
 		context.clearRect(0, 0, this.config.width, this.config.height);
-		context.drawImage(bg, 0, 0, bg.width, bg.height, 0, 0, this.config.width, this.config.height);
+		// context.drawImage(bg, 0, 0, bg.width, bg.height, 0, 0, this.config.width, this.config.height);
 		this.wrapText(msg, context);
 		
 		this.mesh.material.map.needsUpdate = true;
@@ -949,5 +940,5 @@ class SpeechBubble{
 	}
 }
 
-
+////////////////////////////////////////////////////////////
 
