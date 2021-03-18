@@ -480,9 +480,7 @@ class Game{
 					socket.close();
 				  };
 				
-				}	
-
-				
+				}		
 	}
 		
 		}else{

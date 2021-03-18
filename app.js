@@ -83,7 +83,7 @@ io.sockets.on('connection', function(socket){
 });
 
 http.listen(process.env.PORT||8080, function(){
-  console.log('listening on *:2002');
+  console.log('listening on *:8080');
 });
 ////////////////////////// Nik Code ///////////////////////
 setInterval(function(){
