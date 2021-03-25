@@ -348,137 +348,136 @@ class Game{
 				this.speechBubble.player = player;
 				this.speechBubble.update('');
 				this.scene.add(this.speechBubble.mesh);
-				this.chatSocketId = player.id ;
+				this.chatSocketId = player.id && broadcast();
 				chat.style.bottom = '0px';
 				this.activeCamera = this.cameras.chat;
 //////////////////////////////////////////////////////////////////////////////
+				const videob = document.getElementById('broadcaster')
+				const videow = document.getElementById('watcher')	
+				videob.style.display = 'flex'
+				videow.style.display = 'flex'
 
-				broadcast()
+				
 				watcher()
 				
 		function watcher(){
-		let peerConnection;
-		const config = {
-		  iceServers: [
-			{
-			  urls: ["stun:stun.l.google.com:19302"]
-			}
-		  ]
-		};
-		
-		const socket = io.connect(window.location.origin);
-		const video = document.querySelector("#watcher");
-		const vidwat = document.getElementById('watcher')
-		vidwat.style.display = 'flex'
-		vidwat.style.display = 'flex'	
-		
-		socket.on("offer", (id, description) => {
-			peerConnection = new RTCPeerConnection(config);
-			peerConnection
-			  .setRemoteDescription(description)
-			  .then(() => peerConnection.createAnswer())
-			  .then(sdp => peerConnection.setLocalDescription(sdp))
-			  .then(() => {
-				socket.emit("answer", id, peerConnection.localDescription);
+			let peerConnection;
+			const config = {
+			  iceServers: [
+				{
+				  urls: ["stun:stun.l.google.com:19302"]
+				}
+			  ]
+			};
+			
+			const socket = io.connect(window.location.origin);
+			const video = document.querySelector("#watcher");
+			
+			socket.on("offer", (id, description) => {
+				peerConnection = new RTCPeerConnection(config);
+				peerConnection
+				  .setRemoteDescription(description)
+				  .then(() => peerConnection.createAnswer())
+				  .then(sdp => peerConnection.setLocalDescription(sdp))
+				  .then(() => {
+					socket.emit("answer", id, peerConnection.localDescription);
+				  });
+				peerConnection.ontrack = event => {
+				  video.srcObject = event.streams[0];
+				};
+				peerConnection.onicecandidate = event => {
+				  if (event.candidate) {
+					socket.emit("candidate", id, event.candidate);
+				  }
+				};
 			  });
-			peerConnection.ontrack = event => {
-			  video.srcObject = event.streams[0];
-			};
-			peerConnection.onicecandidate = event => {
-			  if (event.candidate) {
-				socket.emit("candidate", id, event.candidate);
-			  }
-			};
-		  });
-		
-		  socket.on("candidate", (id, candidate) => {
-			peerConnection
-			  .addIceCandidate(new RTCIceCandidate(candidate))
-			  .catch(e => console.error(e));
-		  });
-		  
-		  socket.on("connect", () => {
-			socket.emit("watcher");
-		  });
-		  
-		  socket.on("broadcaster", () => {
-			socket.emit("watcher");
-		  });
-		  
-		  window.onunload = window.onbeforeunload = () => {
-			socket.close();
-			peerConnection.close();
-		  };
+			
+			  socket.on("candidate", (id, candidate) => {
+				peerConnection
+				  .addIceCandidate(new RTCIceCandidate(candidate))
+				  .catch(e => console.error(e));
+			  });
+			  
+			  socket.on("connect", () => {
+				socket.emit("watcher");
+			  });
+			  
+			  socket.on("broadcaster", () => {
+				socket.emit("watcher");
+			  });
+			  
+			  window.onunload = window.onbeforeunload = () => {
+				socket.close();
+				peerConnection.close();
+			  };
 		}
 
 		function broadcast(){
 
 			const peerConnections = {};
-				const config = {
-				  iceServers: [
-					{
-					  urls: ["stun:stun.l.google.com:19302"]
-					}
-				  ]
-				};
-				
-				const socket = io.connect(window.location.origin);
-				const video = document.querySelector('#broadcaster')
-				const vidbro = document.getElementById('broadcaster')
-				vidbro.style.display = 'flex'
-				const textureVideo = new THREE.VideoTexture( video );
-				
-				// Media contrains
-				const constraints = {
-				  video: { facingMode: "user" }
-				  // Uncomment to enable audio
-				  // audio: true,
-				};
-				navigator.mediaDevices
-				  .getUserMedia(constraints)
-				  .then(stream => {
-					video.srcObject = stream;
-					socket.emit("broadcaster");
-				  })
-				  .catch(error => console.error(error));
-				
-				  socket.on("watcher", id => {
-					const peerConnection = new RTCPeerConnection(config);
-					peerConnections[id] = peerConnection;
-				  
-					let stream = video.srcObject;
-					stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
-					  
-					peerConnection.onicecandidate = event => {
-					  if (event.candidate) {
-						socket.emit("candidate", id, event.candidate);
-					  }
-					};
-				  
-					peerConnection
-					  .createOffer()
-					  .then(sdp => peerConnection.setLocalDescription(sdp))
-					  .then(() => {
-						socket.emit("offer", id, peerConnection.localDescription);
-					  });
-				  });
-				  
-				  socket.on("answer", (id, description) => {
-					peerConnections[id].setRemoteDescription(description);
-				  });
-				  
-				  socket.on("candidate", (id, candidate) => {
-					peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate));
-				  });
-				
-				  socket.on("disconnectPeer", id => {
-					peerConnections[id].close();
-					delete peerConnections[id];
-				  });
-				
-				  window.onunload = window.onbeforeunload = () => {
-					socket.close();
-				  };
+const config = {
+  iceServers: [
+    {
+      urls: ["stun:stun.l.google.com:19302"]
+    }
+  ]
+};
+
+const socket = io.connect(window.location.origin);
+const video = document.querySelector("#broadcaster");
+
+// Media contrains
+const constraints = {
+  video: { facingMode: "user" }
+  // Uncomment to enable audio
+  // audio: true,
+};
+navigator.mediaDevices
+  .getUserMedia(constraints)
+  .then(stream => {
+    video.srcObject = stream;
+    socket.emit("broadcaster");
+  })
+  .catch(error => console.error(error));
+
+  socket.on("watcher", id => {
+    const peerConnection = new RTCPeerConnection(config);
+    peerConnections[id] = peerConnection;
+  
+    let stream = video.srcObject;
+    stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+      
+    peerConnection.onicecandidate = event => {
+      if (event.candidate) {
+        socket.emit("candidate", id, event.candidate);
+      }
+    };
+  
+    peerConnection
+      .createOffer()
+      .then(sdp => peerConnection.setLocalDescription(sdp))
+      .then(() => {
+        socket.emit("offer", id, peerConnection.localDescription);
+      });
+  });
+  
+  socket.on("answer", (id, description) => {
+    peerConnections[id].setRemoteDescription(description);
+  });
+  
+  socket.on("candidate", (id, candidate) => {
+    peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate));
+  });
+
+  socket.on("disconnectPeer", id => {
+    peerConnections[id].close();
+    delete peerConnections[id];
+  });
+
+  window.onunload = window.onbeforeunload = () => {
+    socket.close();
+  };
+
 				
 				}		
 	}
@@ -492,12 +491,61 @@ class Game{
 				delete this.chatSocketId;
 				chat.style.bottom = '-50px';
 				this.activeCamera = this.cameras.back;
+
 				const videob = document.getElementById('broadcaster')
 				const videow = document.getElementById('watcher')	
 				videob.style.display = 'none'
 				videow.style.display = 'none'
+				const video = document.querySelector('video');
+				const video2 = document.querySelector('#broadcaster')
+				console.log(video2)
+
+// A video's MediaStream object is available through its srcObject attribute
+const mediaStream = video.srcObject;
+
+// Through the MediaStream, you can get the MediaStreamTracks with getTracks():
+const tracks = mediaStream.getTracks();
+
+// Tracks are returned as an array, so if you know you only have one, you can stop it with: 
+tracks[0].stop();
+
+// Or stop all like so:
+tracks.forEach(track => track.stop())
+
+				navigator.mediaDevices.getUserMedia({video: true, audio: false})
+				.then(mediaStream => {
+				  const stream = mediaStream;
+				  const tracks = stream.getTracks();
+			  
+				  tracks[0].stop;
+				})
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// A video's MediaStream object is available through its srcObject attribute
+const mediaStream2 = video2.srcObject;
+
+// Through the MediaStream, you can get the MediaStreamTracks with getTracks():
+const tracks2 = mediaStream2.getTracks();
+
+// Tracks are returned as an array, so if you know you only have one, you can stop it with: 
+tracks2[0].stop();
+
+// Or stop all like so:
+tracks2.forEach(track2 => track2.stop())
+
+				navigator.mediaDevices.getUserMedia({video: true, audio: false})
+				.then(mediaStream2 => {
+				  const stream2 = mediaStream2;
+				  const tracks2 = stream2.getTracks();
+			  
+				  tracks2[0].stop;
+				})
+
+			
 			}else{
+			
+		
 				console.log("onMouseDown: typing");
+	
 			}
 		}
 	}
