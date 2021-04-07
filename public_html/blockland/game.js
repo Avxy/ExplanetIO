@@ -1,4 +1,3 @@
-////////////////////////// Nik Code ///////////////////////////
 class Game{
 	constructor(){
 		if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
@@ -26,6 +25,7 @@ class Game{
 		this.remoteColliders = [];
 		this.initialisingPlayers = [];
 		this.remoteData = [];
+		
 		this.messages = { 
 			text:[ 
 			"Welcome to Blockland",
@@ -98,20 +98,20 @@ class Game{
         this.scene.add( ambient );
 
         const light = new THREE.DirectionalLight( 0xaaaaaa );
-        light.position.set( 1500, 6000, -200);
+        light.position.set( 30, 100, 40 );
         light.target.position.set( 0, 0, 0 );
 
         light.castShadow = true;
 
-		const lightSize = 1500;
+		const lightSize = 500;
         light.shadow.camera.near = 1;
-        light.shadow.camera.far = 1500;
+        light.shadow.camera.far = 500;
 		light.shadow.camera.left = light.shadow.camera.bottom = -lightSize;
 		light.shadow.camera.right = light.shadow.camera.top = lightSize;
 
-        light.shadow.bias = 1.0039;
-        light.shadow.mapSize.width = 6024;
-        light.shadow.mapSize.height = 6024;
+        light.shadow.bias = 0.0039;
+        light.shadow.mapSize.width = 1024;
+        light.shadow.mapSize.height = 1024;
 		
 		this.sun = light;
 		this.scene.add(light);
@@ -251,8 +251,6 @@ class Game{
 		txt.style.fontSize = fontSize + 'px';
 		const btn = document.getElementById('message_ok');
 		const panel = document.getElementById('message');
-		const textm = document.getElementById('textm')
-		textm =panel.innerHTML
 		const game = this;
 		if (onOK!=null){
 			btn.onclick = function(){ 
@@ -270,9 +268,11 @@ class Game{
 	onWindowResize() {
 		this.camera.aspect = window.innerWidth / window.innerHeight;
 		this.camera.updateProjectionMatrix();
-		this.renderer.setSize( window.innerWidth, window.innerHeight );
-	}
 
+		this.renderer.setSize( window.innerWidth, window.innerHeight );
+
+	}
+	
 	updateRemotePlayers(dt){
 		if (this.remoteData===undefined || this.remoteData.length == 0 || this.player===undefined || this.player.id===undefined) return;
 		
@@ -317,10 +317,8 @@ class Game{
 		this.remoteColliders = remoteColliders;
 		this.remotePlayers.forEach(function(player){ player.update( dt ); });	
 	}
-
-	onMouseDown( event ) {
 	
-
+	onMouseDown( event ) {
 		if (this.remoteColliders===undefined || this.remoteColliders.length==0 || this.speechBubble===undefined || this.speechBubble.mesh===undefined) return;
 		
 		// calculate mouse position in normalized device coordinates
@@ -343,21 +341,21 @@ class Game{
 				}
 			});
 			if (players.length>0){
-				const player = players[0]  ;
+				const player = players[0];
 				console.log(`onMouseDown: player ${player.id}`);
 				this.speechBubble.player = player;
 				this.speechBubble.update('');
 				this.scene.add(this.speechBubble.mesh);
-				this.chatSocketId = player.id && broadcast();
+				this.chatSocketId = player.id ;
 				chat.style.bottom = '0px';
 				this.activeCamera = this.cameras.chat;
-//////////////////////////////////////////////////////////////////////////////
+
 				const videob = document.getElementById('broadcaster')
 				const videow = document.getElementById('watcher')	
 				videob.style.display = 'flex'
 				videow.style.display = 'flex'
 
-				
+				broadcast()
 				watcher()
 				
 		function watcher(){
@@ -414,7 +412,7 @@ class Game{
 
 		function broadcast(){
 
-			const peerConnections = {};
+const peerConnections = {};
 const config = {
   iceServers: [
     {
@@ -479,9 +477,8 @@ navigator.mediaDevices
   };
 
 				
-				}		
-	}
-		
+				}	
+			}
 		}else{
 			//Is the chat panel visible?
 			if (chat.style.bottom=='0px' && (window.innerHeight - event.clientY)>40){
@@ -540,16 +537,12 @@ tracks2.forEach(track2 => track2.stop())
 				  tracks2[0].stop;
 				})
 
-			
 			}else{
-			
-		
 				console.log("onMouseDown: typing");
-	
 			}
 		}
 	}
-	//////////////////// Nik Code ////////////////////////////////////////////////////////////
+	
 	getRemotePlayerById(id){
 		if (this.remotePlayers===undefined || this.remotePlayers.length==0) return;
 		
@@ -644,23 +637,22 @@ class Player{
 					child.castShadow = true;
 					child.receiveShadow = true;		
 				}
-			} );	
+			} );
+			
 			
 			const textureLoader = new THREE.TextureLoader();
 			
 			textureLoader.load(`${game.assetsPath}images/SimplePeople_${model}_${colour}.png`, function(texture){
 				object.traverse( function ( child ) {
 					if ( child.isMesh ){
-						console.log(child)
 						child.material.map = texture;
 					}
 				} );
 			});
 			
-			player.object = new THREE.Object3D(); 
+			player.object = new THREE.Object3D();
 			player.object.position.set(3122, 0, -173);
 			player.object.rotation.set(0, 2.6, 0);
-			console.log(player.object)
 			
 			player.object.add(object);
 			if (player.deleted===undefined) game.scene.add(player.object);
@@ -725,7 +717,6 @@ class Player{
 	}
 }
 
-
 class PlayerLocal extends Player{
 	constructor(game, model){
 		super(game, model);
@@ -759,8 +750,6 @@ class PlayerLocal extends Player{
                 }
 			}
 		});
-
-
         
 		socket.on('chat message', function(data){
 			document.getElementById('chat').style.bottom = '0px';
@@ -769,10 +758,7 @@ class PlayerLocal extends Player{
 			game.chatSocketId = player.id;
 			game.activeCamera = game.cameras.chat;
 			game.speechBubble.update(data.message);
-			
 		});
-
-		
         
 		$('#msg-form').submit(function(e){
 			socket.emit('chat message', { id:game.chatSocketId, message:$('#m').val() });
@@ -871,14 +857,14 @@ class PlayerLocal extends Player{
 				if (targetY > this.object.position.y){
 					//Going up
 					this.object.position.y = 0.8 * this.object.position.y + 0.2 * targetY;
-					this.velotownY = 0;
+					this.velocityY = 0;
 				}else if (targetY < this.object.position.y){
 					//Falling
-					if (this.velotownY==undefined) this.velotownY = 0;
-					this.velotownY += dt * gravity;
-					this.object.position.y -= this.velotownY;
+					if (this.velocityY==undefined) this.velocityY = 0;
+					this.velocityY += dt * gravity;
+					this.object.position.y -= this.velocityY;
 					if (this.object.position.y < targetY){
-						this.velotownY = 0;
+						this.velocityY = 0;
 						this.object.position.y = targetY;
 					}
 				}
@@ -909,7 +895,7 @@ class SpeechBubble{
 			// onLoad callback
 			function ( texture ) {
 				// in this example we create the material when the texture is loaded
-				// self.img = texture.image;
+				self.img = texture.image;
 				self.mesh.material.map = texture;
 				self.mesh.material.transparent = true;
 				self.mesh.material.needsUpdate = true;
@@ -943,7 +929,7 @@ class SpeechBubble{
 		
 		const bg = this.img;
 		context.clearRect(0, 0, this.config.width, this.config.height);
-		// context.drawImage(bg, 0, 0, bg.width, bg.height, 0, 0, this.config.width, this.config.height);
+		context.drawImage(bg, 0, 0, bg.width, bg.height, 0, 0, this.config.width, this.config.height);
 		this.wrapText(msg, context);
 		
 		this.mesh.material.map.needsUpdate = true;
@@ -992,6 +978,3 @@ class SpeechBubble{
 		}
 	}
 }
-
-////////////////////////////////////////////////////////////
-
