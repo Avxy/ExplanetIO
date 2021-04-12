@@ -346,7 +346,7 @@ class Game{
 				this.speechBubble.player = player;
 				this.speechBubble.update('');
 				this.scene.add(this.speechBubble.mesh);
-				this.chatSocketId = player.id ;
+				this.chatSocketId = player.id;
 				chat.style.bottom = '0px';
 				this.activeCamera = this.cameras.chat;
 
@@ -355,7 +355,7 @@ class Game{
 				videob.style.display = 'flex'
 				videow.style.display = 'flex'
 
-				broadcast()
+				broadcast(watcher())
 				watcher()
 				
 		function watcher(){
@@ -363,7 +363,7 @@ class Game{
 			const config = {
 			  iceServers: [
 				{
-				  urls: ["stun:stun.l.google.com:19302"]
+				  urls: ["stun:stun3.l.google.com:19302"]
 				}
 			  ]
 			};
