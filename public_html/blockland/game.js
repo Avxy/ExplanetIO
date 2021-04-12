@@ -355,7 +355,7 @@ class Game{
 				videob.style.display = 'flex'
 				videow.style.display = 'flex'
 
-				broadcast(watcher())
+				broadcast()
 				watcher()
 				
 		function watcher(){
