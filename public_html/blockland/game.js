@@ -359,8 +359,8 @@ class Game{
 				watcher()
 				
 		function watcher(){
-			let peerConnection;
-			const config = {
+			let peerConnection1;
+			const config1 = {
 			  iceServers: [
 				{
 				  urls: ["stun:stun3.l.google.com:19302"]
@@ -368,45 +368,45 @@ class Game{
 			  ]
 			};
 			
-			const socket = io.connect(window.location.origin);
-			const video = document.querySelector("#watcher");
+			const socket1 = io.connect(window.location.origin);
+			const videog = document.querySelector("#watcher");
 			
-			socket.on("offer", (id, description) => {
-				peerConnection = new RTCPeerConnection(config);
-				peerConnection
-				  .setRemoteDescription(description)
-				  .then(() => peerConnection.createAnswer())
-				  .then(sdp => peerConnection.setLocalDescription(sdp))
+			socket1.on("offer", (id1, description1) => {
+				peerConnection1 = new RTCPeerConnection(config1);
+				peerConnection1
+				  .setRemoteDescription(description1)
+				  .then(() => peerConnection1.createAnswer())
+				  .then(sdpp => peerConnection1.setLocalDescription(sdpp))
 				  .then(() => {
-					socket.emit("answer", id, peerConnection.localDescription);
+					socket1.emit("answer", id1, peerConnection1.localDescription);
 				  });
-				peerConnection.ontrack = event => {
-				  video.srcObject = event.streams[0];
+				peerConnection1.ontrack = event => {
+				  videog.srcObject = event.streams[0];
 				};
-				peerConnection.onicecandidate = event => {
+				peerConnection1.onicecandidate = event => {
 				  if (event.candidate) {
-					socket.emit("candidate", id, event.candidate);
+					socket1.emit("candidate", id1, event.candidate);
 				  }
 				};
 			  });
 			
-			  socket.on("candidate", (id, candidate) => {
-				peerConnection
-				  .addIceCandidate(new RTCIceCandidate(candidate))
+			  socket1.on("candidate", (id1, candidate1) => {
+				peerConnection1
+				  .addIceCandidate(new RTCIceCandidate(candidate1))
 				  .catch(e => console.error(e));
 			  });
 			  
-			  socket.on("connect", () => {
-				socket.emit("watcher");
+			  socke1t.on("connect", () => {
+				socket1.emit("watcher");
 			  });
 			  
-			  socket.on("broadcaster", () => {
-				socket.emit("watcher");
+			  socket1.on("broadcaster", () => {
+				socket1.emit("watcher");
 			  });
 			  
 			  window.onunload = window.onbeforeunload = () => {
-				socket.close();
-				peerConnection.close();
+				socket1.close();
+				peerConnection1.close();
 			  };
 		}
 

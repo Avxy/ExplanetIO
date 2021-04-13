@@ -18,7 +18,7 @@ app.get('/',function(req, res) {
 });
 app.get('/broadcast', (req, res)=>{
 	var body = req.body
-	res.render('broadcast', {body:body})
+	res.render('index', {body:body})
 })
 
 let broadcaster
