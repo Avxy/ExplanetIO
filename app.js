@@ -6,6 +6,9 @@ const { JSDOM } = jsdom
 const { window } = new JSDOM(`...`);
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+const { v4: uuidV4 } = require('uuid')
+const truffleCfg = require('./seed/truffle-config')
+const Drizzle = require('@drizzle/store')
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname,'public_html/blockland'))
@@ -13,15 +16,25 @@ app.set('views', path.join(__dirname,'public_html/blockland'))
 app.use(express.static('public_html/blockland'));
 app.use(express.static('public_html/libs'));
 // app.use(express.static('public_html/blockland/v3'));
-app.get('/',function(req, res) {
-    res.render('index');
-});
-app.get('/broadcast', (req, res)=>{
-	var body = req.body
-	res.render('index', {body:body})
-})
+// app.get('/',function(req, res, next) {
+// 	next()
+//     res.render('index');
+	
+// });
+// app.get('/drizzle', (req, res)=>{
+// 	res.render('drizzle')
+// })
 
-let broadcaster
+app.get('/', (req, res) => {
+	res.redirect(`/${uuidV4()}`)
+  })
+  
+  app.get('/:room', (req, res) => {
+	res.render('index', { roomId: req.params.room })
+	console.log(req.params.room)
+  })
+
+
 
 ///////////// Nik Code //////////////////////
 io.sockets.on('connection', function(socket){
@@ -60,27 +73,16 @@ io.sockets.on('connection', function(socket){
 		io.to(data.id).emit('chat message', { id: socket.id, message: data.message });
 	})
 ///////////////////////////////////////////////
-	socket.on("broadcaster", () => {
-		broadcaster = socket.id;
-		socket.broadcast.emit("broadcaster");
-	  });
-	  socket.on("watcher", () => {
-		socket.to(broadcaster).emit("watcher", socket.id);
-	  });
-	  socket.on("disconnection", () => {
-		socket.to(broadcaster).emit("disconnectPeer", socket.id);
-	  });
 
-	  socket.on("offer", (id, message) => {
-		socket.to(id).emit("offer", socket.id, message);
-	});
-	socket.on("answer", (id, message) => {
-	  socket.to(id).emit("answer", socket.id, message);
-	});
-	socket.on("candidate", (id, message) => {
-	  socket.to(id).emit("candidate", socket.id, message);
-	});
-});
+	socket.on('join-room', (roomId, userId) => {
+	  socket.join(roomId)
+	  socket.to(roomId).broadcast.emit('user-connected', userId)
+  
+	  socket.on('disconnect', () => {
+		socket.to(roomId).broadcast.emit('user-disconnected', userId)
+	  })
+	})
+  })
 
 http.listen(process.env.PORT||8080, function(){
   console.log('listening on *:8080');
