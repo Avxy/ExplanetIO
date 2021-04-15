@@ -7,8 +7,8 @@ const { window } = new JSDOM(`...`);
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const { v4: uuidV4 } = require('uuid')
-const truffleCfg = require('./seed/truffle-config')
-const Drizzle = require('@drizzle/store')
+// const truffleCfg = require('./seed/truffle-config')
+// const Drizzle = require('@drizzle/store')
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname,'public_html/blockland'))
