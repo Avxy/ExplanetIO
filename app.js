@@ -34,8 +34,6 @@ app.get('/', (req, res) => {
 	console.log(req.params.room)
   })
 
-
-
 ///////////// Nik Code //////////////////////
 io.sockets.on('connection', function(socket){
 	socket.userData = { x:0, y:0, z:0, heading:0 };//Default values;
