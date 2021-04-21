@@ -7,8 +7,8 @@ const { window } = new JSDOM(`...`);
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const { v4: uuidV4 } = require('uuid')
-const { Server } = require('ws');
-const wss = new Server({ server });
+
+
 
 // const truffleCfg = require('./seed/truffle-config')
 // const Drizzle = require('@drizzle/store')
@@ -36,26 +36,6 @@ app.get('/', (req, res) => {
 	res.render('index', { roomId: req.params.room })
 	console.log(req.params.room)
   })
-
-  wss.on('connection', (ws) => {
-	console.log('Client connected');
-	ws.on('close', () => console.log('Client disconnected'));
-  });
-
-  setInterval(() => {
-	wss.clients.forEach((client) => {
-	  client.send(new Date().toTimeString());
-	});
-  }, 1000);
-
-var HOST = location.origin.replace(/^http/, 'ws')
-var ws = new WebSocket(HOST);
-var el;
-
-ws.onmessage = function (event) {
-  el = document.getElementById('server-time');
-  el.innerHTML = 'Server time: ' + event.data;
-};
 
 ///////////// Nik Code //////////////////////
 io.sockets.on('connection', function(socket){
