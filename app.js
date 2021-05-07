@@ -7,6 +7,10 @@ const { window } = new JSDOM(`...`);
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const { v4: uuidV4 } = require('uuid')
+const {ExpressPeerServer} = require('peer')
+const peer = ExpressPeerServer(http , {
+	debug:true
+  });
 
 
 
@@ -18,6 +22,7 @@ app.set('views', path.join(__dirname,'public_html/blockland'))
 
 app.use(express.static('public_html/blockland'));
 app.use(express.static('public_html/libs'));
+app.use('/peerjs', peer);
 // app.use(express.static('public_html/blockland/v3'));
 // app.get('/',function(req, res, next) {
 // 	next()
@@ -29,13 +34,14 @@ app.use(express.static('public_html/libs'));
 // })
 
 app.get('/', (req, res) => {
-	res.redirect(`/${uuidV4()}`)
+	res.render('room', {uuidV4, RoomId: req.params.room })
   })
+
+// app.get('/', (req, res) => {
+// 	res.redirect(`/${uuidV4()}`)
+//   })
   
-  app.get('/:room', (req, res) => {
-	res.render('index', { roomId: req.params.room })
-	console.log(req.params.room)
-  })
+ 
 
 ///////////// Nik Code //////////////////////
 io.sockets.on('connection', function(socket){
@@ -75,14 +81,13 @@ io.sockets.on('connection', function(socket){
 	})
 ///////////////////////////////////////////////
 
-	socket.on('join-room', (roomId, userId) => {
-	  socket.join(roomId)
-	  socket.to(roomId).broadcast.emit('user-connected', userId)
-  
-	  socket.on('disconnect', () => {
-		socket.to(roomId).broadcast.emit('user-disconnected', userId)
-	  })
+socket.on('newUser' , (id , room)=>{
+	socket.join(room);
+	socket.to(room).broadcast.emit('userJoined' , id);
+	socket.on('disconnect' , ()=>{
+		socket.to(room).broadcast.emit('userDisconnect' , id);
 	})
+  })
   })
 
 http.listen(process.env.PORT||8080, function(){
