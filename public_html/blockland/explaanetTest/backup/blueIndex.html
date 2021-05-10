@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <link rel="stylesheet" href="src/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <a id="camera-btn"
+      ><div>
+        <i class="fas fa-camera"></i></div
+    ></a>
+
+    <a id="camera-scroll"
+      ><div>
+        <i class="fas fa-arrow-alt-circle-down"></i></div
+    ></a>
+
+    <button id="btn" onclick="playSound()">Play</button>
+
+    <!-- <div class="text-animation">
+      <span class="one">Ready</span>
+      <span class="two">Steady</span>
+      <span class="three">Go!</span>
+    </div> -->
+
+    <!-- <section> -->
+    <div class="text-animation">
+      <span class="one">Ready</span>
+      <span class="two">Steady</span>
+      <span class="three">Go!</span>
+      <span class="four">The future of education...</span>
+      <span class="five">begins with your curiosity...</span>
+      <span class="six">explore your world though different dimensions...</span>
+      <span class="seven"
+        >connect information, build knolegde and share experiences</span
+      >
+      <span class="eight"
+        >Learn about strategy, science and nature... programming robots,
+      </span>
+      <span class="nine">Everthing using GRAPHS</span>
+    </div>
+
+    <!-- </section> -->
+
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-geo/1.9.1/d3-geo.min.js"></script>
+
+    <script src="https://threejs.org/build/three.min.js"></script>
+    <script src="https://threejs.org/examples/js/loaders/AssimpJSONLoader.js"></script>
+    <script src="https://threejs.org/examples/js/controls/DeviceOrientationControls.js"></script>
+    <script src="https://threejs.org/examples/js/effects/StereoEffect.js"></script>
+    <script src="https://threejs.org/examples/js/libs/tween.min.js"></script>
+    <!-- glowing effect scripts -->
+    <script src="https://threejs.org/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://threejs.org/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://threejs.org/examples/js/postprocessing/MaskPass.js"></script>
+    <script src="https://threejs.org/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://threejs.org/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://threejs.org/examples/js/shaders/FXAAShader.js"></script>
+    <script src="https://threejs.org/examples/js/shaders/ConvolutionShader.js"></script>
+    <script src="https://threejs.org/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://threejs.org/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.1.0/anime.min.js"></script>
+    <script src="https://kit.fontawesome.com/86f3d02ba1.js"></script>
+    <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/2666677/CurveExtras.js"></script>
+    <script src="https://fonts.googleapis.com/css?family=Fredoka+One&amp;display=swap"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.min.js"></script>
+    <script src="https://fonts.googleapis.com/css?family=Fredoka+One&amp;display=swap"></script>
+    <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/2666677/MyShaderChunks.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
+
+    <script src="libs/OrbitControls.js"></script>
+    <script src="libs/Detector.js"></script>
+    <script src="libs/libs/dat.gui.min.js"></script>
+    <script src="libs/stats.min.js"></script>
+
+    <div id="labels" class="menu">
+      <div class="lbl" id="lbl_fcs">Faces: XX</div>
+      <div class="lbl" id="lbl_hex">Hexagons: XX</div>
+      <div class="lbl" id="lbl_sel">Selected:</div>
+      <div class="lbl" id="lbl_ngh">Neighbors:</div>
+    </div>
+
+    <div id="container"></div>
+    <div id="info">
+      <a href="http://threejs.org" target="_blank">three.js</a> webgl -
+      hexplanet
+    </div>
+
+    <script src="src/hexplanet.js"></script>
+
+    <script>
+      var blueprint;
+      document.addEventListener("DOMContentLoaded", function () {
+        blueprint = new Blueprint();
+      });
+    </script>
+  </body>
+</html>

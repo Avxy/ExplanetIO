@@ -17,14 +17,56 @@
 	<meta property="og:image:type" content="image/jpeg" />
 	<meta property="og:image:width" content="1265" />
 	<meta property="og:image:height" content="817" />
-	<meta property="og:image:alt" content="Blockland - a multi-player game" />
+	<meta property="og:image:alt" content="Blueprint" />
 	<meta property='og:video' content='https://www.youtube.com/v/1r9V_JEEMlA' />
 	<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans|Kavivanar" rel="stylesheet">
-
+	<link rel="stylesheet" href="style.css">
+	<style media="screen">
+		*{
+		  margin: 0;
+		}
+		#videoDiv{
+		  display: grid;
+		  grid-gap: 2px;
+		  height:100%;
+		  grid-template-columns: repeat(auto-fill, 300px);
+		  grid-auto-columns: 100px;
+		}
+		#footer{
+		  width: 100%;
+		  height: 50px;
+		  background-color: white;
+		  display: flex;
+		  justify-content:space-around;
+		  flex:1;
+		  border-bottom: 1px solid grey;
+		  margin-top: 2px;
+		}
+		button{
+		  height: 30px;
+		  width: 80px;
+		  margin-top: 10px;
+		  text-align: center;
+		  border-radius: 10px;
+		  outline: none;
+		  border:none;
+		  text-decoration: none;
+		  background-color:red;
+		  cursor: pointer;
+		}
+		video {
+		  width: 50%;
+		  height: 50%;
+		  object-fit:cover;
+		  border:2px solid white;
+		}
+	  </style>
 	
 	<style>
 		body {
 			font-family: Monospace;
+			background-color: transparent;
+
 			
 		}
 
@@ -88,18 +130,14 @@
 			border: none;
 			padding: 10px;
 		}
-
-
-		video {
-			width: 150px;
-			height: 150px;
-			object-fit: cover;
-		}
 	</style>
 </head>
 
 <body>
-    <div style="position: absolute ;" id="container">
+
+	<div style="position: absolute;" id="videoDiv"> </div>
+
+    <div style="position: absolute ; bottom: 10px;" id="container">
 
 	<a id="camera-btn"
 	><div>
@@ -114,7 +152,6 @@
   <button id="btn" onclick="playSound()">Play</button>
 </div>
 
-	<div style="position: absolute;" id="videoDiv"> </div>
 
 	<div id="message">
 		<p style="color: #000;" id="message_text"></p>
@@ -174,7 +211,6 @@
 		var game;
 		document.addEventListener("DOMContentLoaded", function () {
 			game = new Game();
-
 		});
 	</script>
 	<!-- Nik Code -->

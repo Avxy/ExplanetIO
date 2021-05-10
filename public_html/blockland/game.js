@@ -337,6 +337,136 @@ class Game {
 		});
 	}
 
+	ioOn() {
+		const socket = io('/');
+const peer = new Peer();
+let myVideoStream;
+let myId;
+var videoGrid = document.getElementById('videoDiv')
+
+var myvideo = document.createElement('video');
+myvideo.muted = true;
+const peerConnections = {}
+navigator.mediaDevices.getUserMedia({
+video:true,
+audio:true
+}).then((stream)=>{
+myVideoStream = stream;
+addVideo(myvideo , stream);
+peer.on('call' , call=>{
+call.answer(stream);
+
+const vide = document.createElement('video');
+
+call.on('stream' , userStream=>{
+	
+addVideo(vide , userStream);
+})
+call.on('error' , (err)=>{
+alert(err)
+})
+})
+}).catch(err=>{
+alert(err.message)
+})
+peer.on('open' , (id)=>{
+myId = id;
+socket.emit("newUser" , id , roomID);
+})
+peer.on('error' , (err)=>{
+alert(err.type);
+});
+socket.on('userJoined' , id=>{
+console.log("new user joined")
+const call  = peer.call(id , myVideoStream);
+
+const vid = document.createElement('video');
+
+call.on('error' , (err)=>{
+alert(err);
+})
+call.on('stream' , userStream=>{
+addVideo(vid , userStream);
+})
+call.on('close' , ()=>{
+vid.remove();
+console.log("user disconect")
+})
+peerConnections[id] = call;
+})
+socket.on('userDisconnect' , id=>{
+if(peerConnections[id]){
+peerConnections[id].close();
+}
+})
+function addVideo(video , stream, id){
+
+video.srcObject = stream;
+video.addEventListener('loadedmetadata', () => {
+video.play()
+})
+videoGrid.appendChild(video);
+}
+
+	}
+
+	offCam(){
+		
+
+
+		const video = document.querySelector('video');
+
+		video.onloadedmetadata = (event) => {
+		  event = null
+		};
+
+		rev()
+				function rev() {
+					   const videob = document.querySelectorAll('video')
+					   const videoGrid = document.querySelectorAll('#videoGrid')
+					   
+					   videob.forEach(vid => {
+						   vid.remove()
+						   console.log(vid)
+
+					   })
+					   videoGrid.forEach(v =>{
+						   v.removeChild(videob)
+					   })
+				   }
+
+				const mediaStream = videob.srcObject;
+
+				// Through the MediaStream, you can get the MediaStreamTracks with getTracks():
+				const tracks = mediaStream.getTracks();
+
+				tracks.forEach(track=>{
+					track.stop()
+					track.pause()
+				})
+				// Tracks are returned as an array, so if you know you only have one, you can stop it with: 
+				// tracks[0].stop();
+				// tracks[1].stop();
+
+				// Or stop all like so:
+
+				navigator.mediaDevices.getUserMedia({
+						video: false,
+						audio: false
+					})
+					.then(mediaStream => {
+						const stream = mediaStream;
+						const tracks = stream.getTracks();
+						tracks.forEach(track => {
+							track.stop()
+							track.pause()
+						})
+					})
+
+					
+
+	}
+
 	onMouseDown(event) {
 		if (this.remoteColliders === undefined || this.remoteColliders.length == 0 || this.speechBubble === undefined || this.speechBubble.mesh === undefined) return;
 
@@ -369,81 +499,9 @@ class Game {
 				this.chatSocketId = player.id;
 				chat.style.bottom = '0px';
 				this.activeCamera = this.cameras.chat;
+				this.ioOn()
 
-				// const videoNon = document.getElementById('video-grid')
-				// videoNon.style.display = 'grid'
-
-				ioOn()
-
-				function ioOn() {
-					const socket = io('/');
-const peer = new Peer();
-let myVideoStream;
-let myId;
-var videoGrid = document.getElementById('videoDiv')
-
-var myvideo = document.createElement('video');
-myvideo.muted = true;
-const peerConnections = {}
-navigator.mediaDevices.getUserMedia({
-  video:true,
-  audio:true
-}).then((stream)=>{
-  myVideoStream = stream;
-  addVideo(myvideo , stream);
-  peer.on('call' , call=>{
-    call.answer(stream);
 	
-      const vid = document.createElement('video');
-    call.on('stream' , userStream=>{
-      addVideo(vid , userStream);
-    })
-    call.on('error' , (err)=>{
-      alert(err)
-    })
-  })
-}).catch(err=>{
-    alert(err.message)
-})
-peer.on('open' , (id)=>{
-  myId = id;
-  socket.emit("newUser" , id , roomID);
-})
-peer.on('error' , (err)=>{
-  alert(err.type);
-});
-socket.on('userJoined' , id=>{
-  console.log("new user joined")
-  const call  = peer.call(id , myVideoStream);
-	const vid = document.createElement('video');
-  
-  call.on('error' , (err)=>{
-    alert(err);
-  })
-  call.on('stream' , userStream=>{
-    addVideo(vid , userStream);
-  })
-  call.on('close' , ()=>{
-    vid.remove();
-    console.log("user disconect")
-  })
-  peerConnections[id] = call;
-})
-socket.on('userDisconnect' , id=>{
-  if(peerConnections[id]){
-    peerConnections[id].close();
-  }
-})
-function addVideo(video , stream, id){
-	
-  video.srcObject = stream;
-  video.addEventListener('loadedmetadata', () => {
-    video.play()
-  })
-	videoGrid.append(video);
-}
-
-				}
 
 			}
 		} else {
@@ -455,48 +513,8 @@ function addVideo(video , stream, id){
 				delete this.chatSocketId;
 				chat.style.bottom = '-50px';
 				this.activeCamera = this.cameras.back;
-
-				rev()
-
-				async function rev() {
-					const videob = await document.querySelectorAll('video')
-					videob.forEach(vid => {
-						vid.remove()
-						console.log(vid)
-					})
-				}
-
-
-
-
-
-				// A video's MediaStream object is available through its srcObject attribute
-				const mediaStream = videob.srcObject;
-
-				// Through the MediaStream, you can get the MediaStreamTracks with getTracks():
-				const tracks = mediaStream.getTracks();
-
-				// tracks.forEach(track=>{
-				// 	track.stop()
-				// })
-				// Tracks are returned as an array, so if you know you only have one, you can stop it with: 
-				// tracks[0].stop();
-				// tracks[1].stop();
-
-				// Or stop all like so:
-				tracks.forEach(track => track.stop())
-
-				navigator.mediaDevices.getUserMedia({
-						video: true,
-						audio: false
-					})
-					.then(mediaStream => {
-						const stream = mediaStream;
-						const tracks = stream.getTracks();
-
-						tracks[0].stop;
-
-					})
+				this.offCam()	
+				
 			} else {
 				console.log("onMouseDown: typing");
 			}
