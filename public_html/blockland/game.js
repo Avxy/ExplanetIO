@@ -412,8 +412,6 @@ videoGrid.appendChild(video);
 
 	offCam(){
 		
-
-
 		const video = document.querySelector('video');
 
 		video.onloadedmetadata = (event) => {
