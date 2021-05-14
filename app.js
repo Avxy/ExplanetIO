@@ -90,8 +90,8 @@ socket.on('newUser' , (id , room)=>{
   })
   })
 
-http.listen(process.env.PORT||8080, function(){
-  console.log('listening on *:8080');
+http.listen(process.env.PORT||3000, function(){
+  console.log('listening on *:3000');
 });
 ////////////////////////// Nik Code ///////////////////////
 setInterval(function(){

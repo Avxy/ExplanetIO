@@ -345,6 +345,8 @@ let myId;
 var videoGrid = document.getElementById('videoDiv')
 
 var myvideo = document.createElement('video');
+myvideo.classList.add('videoo')
+
 myvideo.muted = true;
 const peerConnections = {}
 navigator.mediaDevices.getUserMedia({
@@ -357,6 +359,7 @@ peer.on('call' , call=>{
 call.answer(stream);
 
 const vide = document.createElement('video');
+vide.classList.add('videoo')
 
 call.on('stream' , userStream=>{
 	
@@ -381,6 +384,8 @@ console.log("new user joined")
 const call  = peer.call(id , myVideoStream);
 
 const vid = document.createElement('video');
+vid.classList.add('videoo')
+
 
 call.on('error' , (err)=>{
 alert(err);
@@ -412,16 +417,12 @@ videoGrid.appendChild(video);
 
 	offCam(){
 		
-		const video = document.querySelector('video');
-
-		video.onloadedmetadata = (event) => {
-		  event = null
-		};
+		
 
 		rev()
 				function rev() {
 					   const videob = document.querySelectorAll('video')
-					   const videoGrid = document.querySelectorAll('#videoGrid')
+					   const videoGrid = document.querySelectorAll('#videoDiv')
 					   
 					   videob.forEach(vid => {
 						   vid.remove()
@@ -433,15 +434,16 @@ videoGrid.appendChild(video);
 					   })
 				   }
 
-				const mediaStream = videob.srcObject;
+				   const videob = document.querySelectorAll('.videoo');
+		const mediaStream = videob.srcObject;
 
-				// Through the MediaStream, you can get the MediaStreamTracks with getTracks():
-				const tracks = mediaStream.getTracks();
+		// Through the MediaStream, you can get the MediaStreamTracks with getTracks():
+		const tracks = mediaStream.getTracks();
 
-				tracks.forEach(track=>{
-					track.stop()
-					track.pause()
-				})
+		tracks.forEach(track=>{
+						track.stop();
+		})
+			
 				// Tracks are returned as an array, so if you know you only have one, you can stop it with: 
 				// tracks[0].stop();
 				// tracks[1].stop();
