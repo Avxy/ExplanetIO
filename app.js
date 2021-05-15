@@ -35,7 +35,7 @@ app.use('/peerjs', peer);
 // })
 
 app.get('/', (req, res) => {
-	res.sendFile(path.join(__dirname,'./public_html/blockland/spa/public/index.html'))
+	res.sendFile('./public_html/blockland/spa/public/index.html')
   })
 
   app.get('/hexlibrium', (req, res) => {
