@@ -351,16 +351,16 @@ var videoGrid = document.getElementById('videoDiv')
 
 var myvideo = document.createElement('video');
 
-myvideo.id = 'myVideo'
-const mVideo = document.getElementById('myVideo')
-const videotexture = new THREE.VideoTexture(mVideo)
-var movieMaterial = new THREE.MeshBasicMaterial( { map: videotexture } );
-var boxVideo = new THREE.BoxGeometry(1,1,1)
-var mVideoMesh = new THREE.Mesh(boxVideo, movieMaterial)
-mVideoMesh.position.set(0,2,0)
+// myvideo.id = 'myVideo'
+// const mVideo = document.getElementById('myVideo')
+// const videotexture = new THREE.VideoTexture(mVideo)
+// var movieMaterial = new THREE.MeshBasicMaterial( { map: videotexture } );
+// var boxVideo = new THREE.BoxGeometry(1,1,1)
+// var mVideoMesh = new THREE.Mesh(boxVideo, movieMaterial)
+// mVideoMesh.position.set(0,2,0)
 
 // videoCanvas.appendChild(mVideoMesh)
-this.scene.add(mVideoMesh)
+// this.scene.add(mVideoMesh)
 // const pageVideo = new Page(this.scene, myvideo, stream)
 // pageVideo.mesh.rotation.y = THREE.Math.degToRad( 60 );
 // pageVideo.mesh.position.set(0,500,-500);
@@ -380,15 +380,15 @@ call.answer(stream);
 
 const vide = document.createElement('video');
 
-vide.id = 'vide'
-const videoID = document.getElementById('vide')
-const videotextureVide = new THREE.VideoTexture(videoID)
-var movieMaterialVide = new THREE.MeshBasicMaterial( { map: videotextureVide } );
-var boxVideoVide = new THREE.BoxGeometry(1,1,1)
-var VideMesh = new THREE.Mesh(boxVideoVide, movieMaterialVide)
-VideMesh.position.set(0,2,0)
+// vide.id = 'vide'
+// const videoID = document.getElementById('vide')
+// const videotextureVide = new THREE.VideoTexture(videoID)
+// var movieMaterialVide = new THREE.MeshBasicMaterial( { map: videotextureVide } );
+// var boxVideoVide = new THREE.BoxGeometry(1,1,1)
+// var VideMesh = new THREE.Mesh(boxVideoVide, movieMaterialVide)
+// VideMesh.position.set(0,2,0)
 // videoCanvas.appendChild(VideMesh)
-this.scene.add(VideMesh)
+// this.scene.add(VideMesh)
 
 vide.classList.add('videoo')
 
@@ -418,14 +418,14 @@ const vid = document.createElement('video');
 
 vid.id = 'vid'
 const vidID = document.getElementById('vid')
-const videotextureVid = new THREE.VideoTexture(vidID)
-var movieMaterialVid = new THREE.MeshBasicMaterial( { map: videotextureVid } );
-var boxVideoVid = new THREE.BoxGeometry(1,1,1)
-var VidMesh = new THREE.Mesh(boxVideoVid, movieMaterialVid)
-VidMesh.position.set(0,2,0)
+// const videotextureVid = new THREE.VideoTexture(vidID)
+// var movieMaterialVid = new THREE.MeshBasicMaterial( { map: videotextureVid } );
+// var boxVideoVid = new THREE.BoxGeometry(1,1,1)
+// var VidMesh = new THREE.Mesh(boxVideoVid, movieMaterialVid)
+// VidMesh.position.set(0,2,0)
 
 // videoCanvas.appendChild(VidMesh)
-this.scene.add(VidMesh)
+// this.scene.add(VidMesh)
 
 vid.classList.add('videoo')
 
@@ -453,7 +453,7 @@ video.srcObject = stream;
 video.addEventListener('loadedmetadata', () => {
 video.play()
 })
-// videoGrid.appendChild(video);
+videoGrid.appendChild(video);
 }
 
 	}
