@@ -21,6 +21,7 @@ app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname,'public_html/blockland'))
 
 app.use(express.static('public_html/blockland'));
+app.use(express.static('public_html/blockland/spa'));
 app.use(express.static('public_html/libs'));
 app.use('/peerjs', peer);
 // app.use(express.static('public_html/blockland/v3'));
@@ -34,6 +35,10 @@ app.use('/peerjs', peer);
 // })
 
 app.get('/', (req, res) => {
+	res.sendFile(path.join(__dirname,'./public_html/blockland/spa/public/index.html'))
+  })
+
+  app.get('/hexlibrium', (req, res) => {
 	res.render('room', {uuidV4, RoomId: req.params.room })
   })
 

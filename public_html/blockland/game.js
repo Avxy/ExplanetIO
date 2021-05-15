@@ -338,13 +338,33 @@ class Game {
 	}
 
 	ioOn() {
-		const socket = io('/');
+
+const socket = io('/');
 const peer = new Peer();
 let myVideoStream;
 let myId;
 var videoGrid = document.getElementById('videoDiv')
+// var videoCanvas = document.createElement('canvas')
+// videoCanvas.style.height = '500px'
+// videoCanvas.style.width = '500px'
+// videoGrid.appendChild(videoCanvas)
 
 var myvideo = document.createElement('video');
+
+myvideo.id = 'myVideo'
+const mVideo = document.getElementById('myVideo')
+const videotexture = new THREE.VideoTexture(mVideo)
+var movieMaterial = new THREE.MeshBasicMaterial( { map: videotexture } );
+var boxVideo = new THREE.BoxGeometry(1,1,1)
+var mVideoMesh = new THREE.Mesh(boxVideo, movieMaterial)
+mVideoMesh.position.set(0,2,0)
+
+// videoCanvas.appendChild(mVideoMesh)
+this.scene.add(mVideoMesh)
+// const pageVideo = new Page(this.scene, myvideo, stream)
+// pageVideo.mesh.rotation.y = THREE.Math.degToRad( 60 );
+// pageVideo.mesh.position.set(0,500,-500);
+
 myvideo.classList.add('videoo')
 
 myvideo.muted = true;
@@ -359,6 +379,17 @@ peer.on('call' , call=>{
 call.answer(stream);
 
 const vide = document.createElement('video');
+
+vide.id = 'vide'
+const videoID = document.getElementById('vide')
+const videotextureVide = new THREE.VideoTexture(videoID)
+var movieMaterialVide = new THREE.MeshBasicMaterial( { map: videotextureVide } );
+var boxVideoVide = new THREE.BoxGeometry(1,1,1)
+var VideMesh = new THREE.Mesh(boxVideoVide, movieMaterialVide)
+VideMesh.position.set(0,2,0)
+// videoCanvas.appendChild(VideMesh)
+this.scene.add(VideMesh)
+
 vide.classList.add('videoo')
 
 call.on('stream' , userStream=>{
@@ -384,8 +415,19 @@ console.log("new user joined")
 const call  = peer.call(id , myVideoStream);
 
 const vid = document.createElement('video');
-vid.classList.add('videoo')
 
+vid.id = 'vid'
+const vidID = document.getElementById('vid')
+const videotextureVid = new THREE.VideoTexture(vidID)
+var movieMaterialVid = new THREE.MeshBasicMaterial( { map: videotextureVid } );
+var boxVideoVid = new THREE.BoxGeometry(1,1,1)
+var VidMesh = new THREE.Mesh(boxVideoVid, movieMaterialVid)
+VidMesh.position.set(0,2,0)
+
+// videoCanvas.appendChild(VidMesh)
+this.scene.add(VidMesh)
+
+vid.classList.add('videoo')
 
 call.on('error' , (err)=>{
 alert(err);
@@ -404,21 +446,20 @@ if(peerConnections[id]){
 peerConnections[id].close();
 }
 })
+const t = this.scene
 function addVideo(video , stream, id){
 
 video.srcObject = stream;
 video.addEventListener('loadedmetadata', () => {
 video.play()
 })
-videoGrid.appendChild(video);
+// videoGrid.appendChild(video);
 }
 
 	}
 
-	offCam(){
+offCam(){
 		
-		
-
 		rev()
 				function rev() {
 					   const videob = document.querySelectorAll('video')
@@ -434,7 +475,7 @@ videoGrid.appendChild(video);
 					   })
 				   }
 
-				   const videob = document.querySelectorAll('.videoo');
+		const videob = document.querySelectorAll('.videoo');
 		const mediaStream = videob.srcObject;
 
 		// Through the MediaStream, you can get the MediaStreamTracks with getTracks():
